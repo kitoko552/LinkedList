@@ -155,9 +155,8 @@ void deleteAllNodes(NODE **nodePointer) {
 		node = *nodePointer;
 		*nodePointer = (*nodePointer) -> next;
 		free(node);
+		node = NULL;
 	}
-
-	*nodePointer = NULL;
 }
 
 void printList(NODE *nodePointer) {
