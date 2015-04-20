@@ -1,6 +1,6 @@
 #include "LinkedList.h"
 
-NODE* newNode(int data, NODE *next) {
+NODE* newNode(int value, NODE *next) {
 	NODE *node;
 	node = malloc(sizeof(NODE));
 
@@ -8,44 +8,67 @@ NODE* newNode(int data, NODE *next) {
 		return NULL;
 	}
 
-	node -> data = data;
+	node -> value = value;
 	node -> next = next;
 
 	return node;
 }
 
-bool prependNode(int data, NODE **nodePointer) {
+NODE* newNodes(int arg_num, ...) {
+	va_list args;
+	int i;
+	int value;
 	NODE *node;
-	node = newNode(data, *nodePointer);
 
-    if (nodePointer == NULL) {
+	if (arg_num < 1) {
+		return NULL;
+	}
+
+	va_start(args, arg_num);
+
+	value = va_arg(args, int);
+	node = newNode(value, NULL);
+
+	for (i = 0; i < arg_num - 1; i++) {
+		value = va_arg(args, int);
+		appendNode(value, &node);
+	}
+	
+	return node; 
+}
+
+bool prependNode(int value, NODE **list) {
+	NODE *node;
+	node = newNode(value, *list);
+
+    if (*list == NULL || node == NULL) {
         return false;
     }
 	
-	*nodePointer = node;
+	*list = node;
 
 	return true;
 }
 
-bool appendNode(int data, NODE **nodePointer) {
+bool appendNode(int value, NODE **list) {
 	NODE *node;
-	node = newNode(data, NULL);
+	node = newNode(value, NULL);
 
-	if (nodePointer == NULL) {
+	if (*list == NULL || node == NULL) {
 		return false;
 	}
 		
-	while (*nodePointer != NULL) {
-		// *nodePointer = (*nodePointer) -> nextだと先頭を指すポインタを変えてしまう。
-		nodePointer = &((*nodePointer) -> next);
+	while (*list != NULL) {
+		// *list = (*list) -> nextだと先頭を指すポインタを変えてしまう。
+		list = &((*list) -> next);
 	}
 		
-	*nodePointer = node;
+	*list = node;
 
 	return true;
 }
 
-bool insertNode(int index, int data, NODE **nodePointer) {
+bool insertNode(int index, int value, NODE **list) {
 	NODE *node;
 	int i;
 
@@ -53,8 +76,8 @@ bool insertNode(int index, int data, NODE **nodePointer) {
 		return false;
 	}
 
-	for (i = 0; i < index && *nodePointer != NULL; i++) {
-		nodePointer = &((*nodePointer) -> next);
+	for (i = 0; i < index && *list != NULL; i++) {
+		list = &((*list) -> next);
 	}
 
 	// この時点でiがindexより小さいということは、indexがlist長を超えていることを示す。
@@ -62,18 +85,18 @@ bool insertNode(int index, int data, NODE **nodePointer) {
 		return false;
 	}
 
-	node = newNode(data, *nodePointer);
+	node = newNode(value, *list);
 
 	if (node == NULL) {
 		return false;
 	}
 
-	*nodePointer = node;
+	*list = node;
 
 	return true;
 }
 
-bool deleteNode(int index, NODE **nodePointer) {
+bool deleteNode(int index, NODE **list) {
 	NODE *deleteNode;
 	int i;
 
@@ -81,8 +104,8 @@ bool deleteNode(int index, NODE **nodePointer) {
 		return false;
 	}
 
-	for (i = 0; i < index && *nodePointer != NULL; i++) {
-		nodePointer = &((*nodePointer) -> next);
+	for (i = 0; i < index && *list != NULL; i++) {
+		list = &((*list) -> next);
 	}
 
 	// この時点でiがindexより小さいということは、indexがlist長を超えていることを示す。
@@ -90,24 +113,22 @@ bool deleteNode(int index, NODE **nodePointer) {
 		return false;
 	}
 
-	deleteNode = *nodePointer;
-	*nodePointer = (*nodePointer) -> next;
+	deleteNode = *list;
+	*list = (*list) -> next;
 	free(deleteNode);
 
 	return true;
 }
 
-bool replaceNode(int index, int data, NODE **nodePointer) {
-	NODE *node;
-	NODE *deleteNode;
+bool updateNode(int index, int value, NODE **list) {
 	int i;
 
 	if (index < 0) {
 		return false;
 	}
 
-	for (i = 0; i < index && *nodePointer != NULL; i++) {
-		nodePointer = &((*nodePointer) -> next);
+	for (i = 0; i < index && *list != NULL; i++) {
+		list = &((*list) -> next);
 	}
 
 	// この時点でiがindexより小さいということは、indexがlist長を超えていることを示す。
@@ -115,62 +136,54 @@ bool replaceNode(int index, int data, NODE **nodePointer) {
 		return false;
 	}
 
-	node = newNode(data, (*nodePointer) -> next);
-
-	if (node == NULL) {
-		return false;
-	}
-
-	deleteNode = *nodePointer;
-	*nodePointer = node;
-	free(deleteNode);
+	(*list) -> value = value;
 
 	return true;
 }
 
-int getNumNodes(NODE *nodePointer) {
+int getNumNodes(NODE *list) {
 	int num = 0;
 
-	while (nodePointer != NULL) {
-		nodePointer = nodePointer -> next;
+	while (list != NULL) {
+		list = list -> next;
 		num++;
 	}
 
 	return num;
 }
 
-int searchData(int data, NODE *nodePointer) {
+int searchValue(int value, NODE *list) {
 	int index = 0;
 
-	while (nodePointer != NULL) {
-		if (nodePointer -> data == data) {
+	while (list != NULL) {
+		if (list -> value == value) {
 			return index;
 		}
 
-		nodePointer = nodePointer -> next;
+		list = list -> next;
 		index++;
 	}
 
 	return -1;
 }
 
-void deleteAllNodes(NODE **nodePointer) {
+void deleteAllNodes(NODE **list) {
 	NODE *node;
 	
-	while (*nodePointer != NULL) {
-		node = *nodePointer;
-		*nodePointer = (*nodePointer) -> next;
+	while (*list != NULL) {
+		node = *list;
+		*list = (*list) -> next;
 		free(node);
 		node = NULL;
 	}
 }
 
-void printList(NODE *nodePointer) {
+void printList(NODE *list) {
 	printf("{ ");
 
-	while (nodePointer != NULL) {
-		printf("%d ", nodePointer -> data);
-		nodePointer = nodePointer -> next;
+	while (list != NULL) {
+		printf("%d ", list -> value);
+		list = list -> next;
 	}
 
 	printf("}\n");

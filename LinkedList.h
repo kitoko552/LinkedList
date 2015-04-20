@@ -4,14 +4,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdarg.h>
 
 /**
  * 連結リストを実現するためのノード構造体
  */
 typedef struct node {
-	int data;
+	int value;
 	struct node *next;
-} NODE, *LinkedList;
+} NODE;
 
 /**
  * 新しいノードを作成する関数
@@ -21,6 +22,15 @@ typedef struct node {
  * @return 新しく生成したノードのポインタ
  */
 NODE* newNode(int, NODE*);
+
+/**
+ * 新しいリスト（複数ノード）を作成する関数
+ * @param int 要素数
+ * @param int... 要素
+ *
+ * @return 新しく生成したリストのheadポインタ
+ */
+NODE* newNodes(int, ...);
 
 /**
  * リストの先頭に要素を追加する関数
@@ -67,7 +77,7 @@ bool deleteNode(int, NODE**);
  *
  * @return 成功: true, 失敗: false
  */
-bool replaceNode(int, int, NODE**);
+bool updateNode(int, int, NODE**);
 
 /**
  * リストの要素数を取得する関数
@@ -84,7 +94,7 @@ int getNumNodes(NODE*);
  *
  * @return 指定した値が存在すればindex、存在しなければ-1を返す。
  */
-int searchData(int, NODE*);
+int searchValue(int, NODE*);
 
 /**
  * リストの全要素を削除する関数
