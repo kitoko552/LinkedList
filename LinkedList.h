@@ -11,7 +11,7 @@
 typedef struct node {
 	int data;
 	struct node *next;
-} NODE;
+} NODE, *LinkedList;
 
 /**
  * 新しいノードを作成する関数

@@ -2,7 +2,7 @@
 
 NODE* newNode(int data, NODE *next) {
 	NODE *node;
-	node = malloc(sizeof(node));
+	node = malloc(sizeof(NODE));
 
 	if (node == NULL) {
 		return NULL;
@@ -74,6 +74,7 @@ bool insertNode(int index, int data, NODE **nodePointer) {
 }
 
 bool deleteNode(int index, NODE **nodePointer) {
+	NODE *deleteNode;
 	int i;
 
 	if (index < 0) {
@@ -89,13 +90,16 @@ bool deleteNode(int index, NODE **nodePointer) {
 		return false;
 	}
 
+	deleteNode = *nodePointer;
 	*nodePointer = (*nodePointer) -> next;
+	free(deleteNode);
 
 	return true;
 }
 
 bool replaceNode(int index, int data, NODE **nodePointer) {
 	NODE *node;
+	NODE *deleteNode;
 	int i;
 
 	if (index < 0) {
@@ -117,7 +121,9 @@ bool replaceNode(int index, int data, NODE **nodePointer) {
 		return false;
 	}
 
+	deleteNode = *nodePointer;
 	*nodePointer = node;
+	free(deleteNode);
 
 	return true;
 }
